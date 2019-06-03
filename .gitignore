@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+# imgs
+raw_data/images/
+raw_data/images2/
+raw_data/annotations/
+raw_data/.xlsx
+data/.csv
+data/.record
