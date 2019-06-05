@@ -47,11 +47,14 @@ def scraping(df):
 
 def resize(basewidth):
     
-    for file in os.listdir('./images/'):
+    for i, file in enumerate(os.listdir('./images/')):
         filename = os.path.join('./images/',file)
         img = cv2.imread(filename)
-        if (img.shape[0]*img.shape[1]) >= 178956970:
-            os.remove(filename)
+        try:
+            if (img.shape[0]*img.shape[1]) >= 178956970:
+                os.remove(filename)
+                continue
+        except:
             continue
         img = Image.open(filename)
         wpercent = (basewidth/float(img.size[0]))
@@ -59,15 +62,15 @@ def resize(basewidth):
         img = img.resize((basewidth,hsize), Image.ANTIALIAS)
         img.save(os.path.join(filename))
         
-        print("Done with reshape {}".format(file))
+        print("{}: Done with reshape {}".format(i,file))
 
 if __name__ == "__main__":
     
-    # df = pd.read_excel("raw_data.xlsx")
-    # df["英文品名"] = df["英文品名"].map(lambda x: str(x).replace(" ", "_"))
+    df = pd.read_excel("raw_data.xlsx")
+    df["英文品名"] = df["英文品名"].map(lambda x: str(x).replace(" ", "_"))
 
     # scraping
-    # scraping(df)
+    scraping(df)
 
     # Select the imgs of tablets or capsules
     for file in os.listdir("./images/"):
