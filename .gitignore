@@ -106,8 +106,10 @@ venv.bak/
 
 # imgs
 raw_data/images/
-raw_data/images2/
+raw_data/tests/
+raw_data/images_crop/
 raw_data/annotations/
 raw_data/.xlsx
 data/.csv
 data/.record
+
