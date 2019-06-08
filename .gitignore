@@ -113,3 +113,6 @@ align/data/.csv
 align/data/.record
 data/train_imgs/
 
+# graphs
+align/my_exported_graphs/
+

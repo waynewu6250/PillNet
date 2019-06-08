@@ -1,5 +1,13 @@
 class Config:
 
+    ########## For LiveStream ############
+    MODEL_NAME = './align/my_exported_graphs'
+    PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
+    PATH_TO_LABELS = './training/pill_detection.pbtxt'
+    NUM_CLASSES = 1
+    ########## For LiveStream ############
+
+    ######## For PILLNET training ########
     data_path = "./data/train_imgs"
 
     # Hyperparameter
@@ -17,11 +25,7 @@ class Config:
     # For center loss
     alpha = 0.4
     center_loss_factor = 1e-2
-
-
-
-    
-
+    ######## For PILLNET training ########
 
 
 opt = Config()
