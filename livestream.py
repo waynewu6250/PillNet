@@ -52,6 +52,8 @@ def recognize_image(detection_modules, image_path):
     save_path = "./data/identify_results/{}".format(image_path.split('/')[-1].split('.')[0])
     
     cv2.imwrite(save_path+'-result.jpg', image_np)
+    
+    return image_np
 
 # Live Stream Mode
 def start_livestream(detection_modules):
@@ -116,17 +118,24 @@ if __name__ == "__main__":
             detection_modules = (image_tensor, detection_boxes,
                                  detection_scores, detection_classes,
                                  num_detections)
-            
+            # Live Stream Mode
             if args.mode == "livestream":
                 start_livestream(detection_modules)
+            
+            # Test single image
             elif args.mode == "test":
                 opt.image_path = args.img_path
-                recognize_image(detection_modules, opt.image_path)
+                image_np = recognize_image(detection_modules, opt.image_path)
+                cv2.imshow("Label Img",image_np)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            
+            # Validation
             elif args.mode == "images":
                 test_df = pd.read_csv("align/data/test_labels.csv")
                 for i, filename in enumerate(test_df["filename"]):
                     image_path = os.path.join("align/raw_data/tests", filename)
-                    recognize_image(detection_modules, image_path)
+                    image_np = recognize_image(detection_modules, image_path)
                     print("Identification Done: %d" % i)
             else:
                 start_livestream(detection_modules)
