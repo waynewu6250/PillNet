@@ -59,9 +59,11 @@ graph/
 
 -----------------------------------
 
-pill_crop.py
-config.py
 train.py
+livestream.py
+config.py
+pill_crop.py
+
 
 ```
 
@@ -126,6 +128,24 @@ And export your model by typing the following command:
 >
     bash export.sh <Your checkpoint id>
 
+Your trained model will be saved in `object_detection/my_exported_graphs/`
+
+6. Move your `my_exported_graphs` back to PillNet folder and put it down in `PillNet/align/` folder. Then you can run three modes to validate your model:
+>
+    1. Real-time
+    python livestream.py -m livestream
+
+    2. One test image
+    python livestream.py -m test -i <Test Image Path>
+
+    3. Test images
+    python livestream.py -m images
+
+
+### Pill Recognition
+1. First run the following command to create training data for pills
+>
+    python pill_crop.py
 
 
 

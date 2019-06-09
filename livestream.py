@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import cv2
 import argparse
+import os
 from PIL import Image
+import pandas as pd
 
 from config import opt
 from align.utils import label_map_util
@@ -47,7 +49,7 @@ def recognize_image(detection_modules, image_path):
     # Detect the image
     image_np = detect(image_np, detection_modules)
 
-    save_path = "./data/identify_results/{}".format(opt.image_path.split('/')[-1].split('.')[0])
+    save_path = "./data/identify_results/{}".format(image_path.split('/')[-1].split('.')[0])
     
     cv2.imwrite(save_path+'-result.jpg', image_np)
 
@@ -80,6 +82,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", help="which mode to perform: livestream or image", dest="mode", default="livestream")
+    parser.add_argument("-img", "--image", help="The image path you would like to test", dest="img_path", default="./align/raw_data/tests/YuLuAn_Cold_FC_Tablets.jpg")
     args = parser.parse_args()
 
     # Import the graph
@@ -116,7 +119,14 @@ if __name__ == "__main__":
             
             if args.mode == "livestream":
                 start_livestream(detection_modules)
-            elif args.mode == "image":
+            elif args.mode == "test":
+                opt.image_path = args.img_path
                 recognize_image(detection_modules, opt.image_path)
+            elif args.mode == "images":
+                test_df = pd.read_csv("align/data/test_labels.csv")
+                for i, filename in enumerate(test_df["filename"]):
+                    image_path = os.path.join("align/raw_data/tests", filename)
+                    recognize_image(detection_modules, image_path)
+                    print("Identification Done: %d" % i)
             else:
                 start_livestream(detection_modules)

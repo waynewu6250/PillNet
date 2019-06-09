@@ -112,6 +112,7 @@ align/raw_data/.xlsx
 align/data/.csv
 align/data/.record
 data/train_imgs/
+data/identify_results/
 
 # graphs
 align/my_exported_graphs/
