@@ -70,33 +70,37 @@ pill_crop.py
 ## To USE
 
 ### Object Detection
-1. Download all the pill images using `align/raw_data/raw_data.xlsx` by using the following command:
+1. Locate your current folder at `PillNet/align`:
+>
+    cd align
+
+2. Download all the pill images using `align/raw_data/raw_data.xlsx` by using the following command:
 
 >
-    python align/raw_data/pill_download.py
+    python raw_data/pill_download.py
 
-2. Use [LabelImg](https://github.com/tzutalin/labelImg) to label the data for tensorflow object detection api input. And store the xml output files all in  `align/raw_data/annotations/`
+3. Use [LabelImg](https://github.com/tzutalin/labelImg) to label the data for tensorflow object detection api input. And store the xml output files all in  `align/raw_data/annotations/`
 
 >
     pip install LabelImg
     labelImg
 
-3. Then use the following command to transform the data into TFrecord format to feed into network.
+4. Then use the following command to transform the data into TFrecord format to feed into network.
 
 >
-    python align/xml_to_csv.py
+    python xml_to_csv.py
 
-    python align/generate_tfrecord.py \
-            --csv_input=align/data/train_labels.csv \
-            --output_path=align/data/train.record \
-            --image_dir=align/raw_data/images \
+    python generate_tfrecord.py \
+            --csv_input=data/train_labels.csv \
+            --output_path=data/train.record \
+            --image_dir=raw_data/images \
     
-    python align/generate_tfrecord.py \
-            --csv_input=align/data/test_labels.csv \
-            --output_path=align/data/test.record \
-            --image_dir=align/raw_data/images \
+    python generate_tfrecord.py \
+            --csv_input=data/test_labels.csv \
+            --output_path=data/test.record \
+            --image_dir=raw_data/images \
 
-4. Put the required files into tensorflow object detection modules.
+5. Put the required files into tensorflow object detection modules.
 
 >
     git clone https://github.com/tensorflow/models.git
@@ -120,7 +124,7 @@ object_detection/
 
 ```
 
-5. Then use the following command to train the module.
+6. Then use the following command to train the module.
 >
     bash train.sh
 
@@ -130,7 +134,7 @@ And export your model by typing the following command:
 
 Your trained model will be saved in `object_detection/my_exported_graphs/`
 
-6. Move your `my_exported_graphs` back to PillNet folder and put it down in `PillNet/align/` folder. Then you can run three modes to validate your model:
+7. Move your `my_exported_graphs` back to PillNet folder and put it down in `PillNet/align/` folder. Then locate back to `PillNet`, you can run three modes to validate your model:
 >
     1. Real-time
     python livestream.py -m livestream
