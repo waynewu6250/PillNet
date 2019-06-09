@@ -1,6 +1,7 @@
 import tensorflow as tf
-from config import opt
+import os
 
+from config import opt
 from data import ImageData
 from model import PillNet
 
@@ -30,9 +31,9 @@ def train():
         summary_op=tf.summary.merge_all()
         init = tf.global_variables_initializer()
         
-        ################################################
-        ############ Start to run the graph ############
-        ################################################
+        ###########################################################################
+        ############               Start to run the graph              ############
+        ###########################################################################
 
         with tf.Session() as sess:
 
@@ -44,7 +45,24 @@ def train():
             coord = tf.train.Coordinator()
             tf.train.start_queue_runners(coord=coord, sess=sess)
 
+            # Load model
+            if os.path.exists(opt.model_dir):
+                model_file = tf.train.latest_checkpoint(opt.model_dir)
+                if model_file:
+                    sess.restore(sess, model_file)
+                    print("Load from latest checkpoint")
+            else:
+                os.mkdir(opt.model_dir)
             
+            for epoch in range(opt.max_epoch):
+
+                global_step = sess.run(global_step)
+                
+
+            
+
+
+
 
 
 
