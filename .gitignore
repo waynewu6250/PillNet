@@ -116,3 +116,6 @@ data/train_imgs/
 # graphs
 align/my_exported_graphs/
 
+# ipynb
+*.ipynb
+

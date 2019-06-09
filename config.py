@@ -3,7 +3,7 @@ class Config:
     ########## For LiveStream ############
     MODEL_NAME = './align/my_exported_graphs'
     PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
-    PATH_TO_LABELS = './training/pill_detection.pbtxt'
+    PATH_TO_LABELS = './align/training/pill_detection.pbtxt'
     NUM_CLASSES = 1
     ########## For LiveStream ############
 
