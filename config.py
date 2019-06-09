@@ -5,6 +5,7 @@ class Config:
     PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
     PATH_TO_LABELS = './align/training/pill_detection.pbtxt'
     NUM_CLASSES = 1
+    image_path = './align/raw_data/tests/YuLuAn_Cold_FC_Tablets.jpg'
     ########## For LiveStream ############
 
     ######## For PILLNET training ########

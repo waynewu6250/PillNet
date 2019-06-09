@@ -1,26 +1,58 @@
 import tensorflow as tf
 import numpy as np
 import cv2
-from config import opt
+import argparse
+from PIL import Image
 
+from config import opt
 from align.utils import label_map_util
 from align.utils import visualization_utils as vis_util
 
 # Image helper
-
-
 def load_image_into_numpy_array(image):
     (im_width, im_height) = image.size
     return np.array(image.getdata()).reshape(
         (im_height, im_width, 3)).astype(np.uint8)
 
-# Live Stream Mode
-
-
-def start_livestream(detection_modules):
+# Detection helper
+def detect(image_np, detection_modules):
 
     (image_tensor, detection_boxes, detection_scores,
      detection_classes, num_detections) = detection_modules
+
+    image_np_expanded = np.expand_dims(image_np, axis=0)
+
+    (boxes, scores, classes, num) = sess.run(
+                [detection_boxes, detection_scores,
+                    detection_classes, num_detections],
+                feed_dict={image_tensor: image_np_expanded})
+
+    vis_util.visualize_boxes_and_labels_on_image_array(
+        image_np,
+        np.squeeze(boxes),
+        np.squeeze(classes).astype(np.int32),
+        np.squeeze(scores),
+        category_index,
+        use_normalized_coordinates=True,
+        line_thickness=4)
+    
+    return image_np
+
+# Recognize image
+def recognize_image(detection_modules, image_path):
+
+    image = Image.open(image_path)
+    image_np = load_image_into_numpy_array(image)
+
+    # Detect the image
+    image_np = detect(image_np, detection_modules)
+
+    save_path = "./data/identify_results/{}".format(opt.image_path.split('/')[-1].split('.')[0])
+    
+    cv2.imwrite(save_path+'-result.jpg', image_np)
+
+# Live Stream Mode
+def start_livestream(detection_modules):
 
     # Start to detect
     cap = cv2.VideoCapture(0)
@@ -30,22 +62,9 @@ def start_livestream(detection_modules):
         ret, frame = cap.read()
 
         if ret:  # check ! (some webcam's need a "warmup")
-
-            image_np_expanded = np.expand_dims(frame, axis=0)
-
-            (boxes, scores, classes, num) = sess.run(
-                [detection_boxes, detection_scores,
-                    detection_classes, num_detections],
-                feed_dict={image_tensor: image_np_expanded})
-
-            vis_util.visualize_boxes_and_labels_on_image_array(
-                frame,
-                np.squeeze(boxes),
-                np.squeeze(classes).astype(np.int32),
-                np.squeeze(scores),
-                category_index,
-                use_normalized_coordinates=True,
-                line_thickness=4)
+            
+            # Detect the frame
+            frame = detect(frame, detection_modules)
 
             # Display the resulting frame
             cv2.imshow('pill detection', frame)
@@ -58,6 +77,10 @@ def start_livestream(detection_modules):
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", help="which mode to perform: livestream or image", dest="mode", default="livestream")
+    args = parser.parse_args()
 
     # Import the graph
     detection_graph = tf.Graph()
@@ -90,5 +113,10 @@ if __name__ == "__main__":
             detection_modules = (image_tensor, detection_boxes,
                                  detection_scores, detection_classes,
                                  num_detections)
-
-            start_livestream(detection_modules)
+            
+            if args.mode == "livestream":
+                start_livestream(detection_modules)
+            elif args.mode == "image":
+                recognize_image(detection_modules, opt.image_path)
+            else:
+                start_livestream(detection_modules)
