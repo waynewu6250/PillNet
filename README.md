@@ -1,7 +1,7 @@
 # PillNet
 PillNet: Pharmaceutical Pill identification via Tensorflow Object Detection API and Inception-ResNet CNN-fused siamese network.
 
-<img src="data/identify_results/CIPROXIN_FILM-COATED_TABLETS_500MG-result.jpg">
+<img src="pictures/CIPROXIN_FILM-COATED_TABLETS_500MG-result.jpg">
 
 ## Structure
 The project has been seperated into three parts:
