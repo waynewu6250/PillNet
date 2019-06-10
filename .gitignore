@@ -116,6 +116,7 @@ data/identify_results/
 
 # graphs
 align/my_exported_graphs/
+align/my_exported_graphs_old/
 
 # ipynb
 *.ipynb

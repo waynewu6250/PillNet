@@ -7,7 +7,7 @@ class InceptionResnetV1:
         pass
         
     def block35(self, net, scale=1.0, activation_fn=tf.nn.relu, scope=None, reuse=None):
-        """建立一个 35x35 resnet block."""
+        """Builds the  35x35 resnet block. """
         with tf.variable_scope(scope, 'Block35', [net], reuse=reuse):
             with tf.variable_scope('Branch_0'):
                 tower_conv = slim.conv2d(net, 32, 1, scope='Conv2d_1x1')
@@ -133,17 +133,18 @@ class InceptionResnetV1:
                             bottleneck_layer_size=128,
                             reuse=None, 
                             scope='InceptionResnetV1'):
-        """创建 Inception Resnet V1 model.
-        参数:
-        inputs: 输入图像 [batch_size, height, width, 3].
-        num_classes: 预测类别数量.
-        is_training: 是否训练
-        dropout_keep_prob: dropout的概率
-        reuse: 参数是否共享
-        scope: 变量命名
-        返回值:
-        logits: 模型输出.
-        end_points: 模型节点输出集合
+        """Inception Resnet V1 model.
+        Parameters:
+        inputs: input image[batch_size, height, width, 3].
+        num_classes: number of classes
+        is_training: train or not
+        dropout_keep_prob: dropout rate
+        reuse: parameter sharing
+        scope: name scope
+        
+        Return Value:
+        logits: Model Output
+        end_points: Nodes output
         """
         end_points = {}
     
