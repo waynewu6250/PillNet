@@ -124,7 +124,7 @@ class InceptionResnetV1:
                             weights_regularizer=slim.l2_regularizer(weight_decay),
                             normalizer_fn=slim.batch_norm,
                             normalizer_params=batch_norm_params):
-            return inception_resnet_v1(images, is_training=phase_train,
+            return self.inception_resnet_v1(images, is_training=phase_train,
                 dropout_keep_prob=keep_probability, bottleneck_layer_size=bottleneck_layer_size, reuse=reuse)
 
 
@@ -183,28 +183,28 @@ class InceptionResnetV1:
                     end_points['Conv2d_4b_3x3'] = net
                     
                     # 5 x Inception-resnet-A
-                    net = slim.repeat(net, 5, block35, scale=0.17)
+                    net = slim.repeat(net, 5, self.block35, scale=0.17)
                     end_points['Mixed_5a'] = net
             
                     # Reduction-A
                     with tf.variable_scope('Mixed_6a'):
-                        net = reduction_a(net, 192, 192, 256, 384)
+                        net = self.reduction_a(net, 192, 192, 256, 384)
                     end_points['Mixed_6a'] = net
                     
                     # 10 x Inception-Resnet-B
-                    net = slim.repeat(net, 10, block17, scale=0.10)
+                    net = slim.repeat(net, 10, self.block17, scale=0.10)
                     end_points['Mixed_6b'] = net
                     
                     # Reduction-B
                     with tf.variable_scope('Mixed_7a'):
-                        net = reduction_b(net)
+                        net = self.reduction_b(net)
                     end_points['Mixed_7a'] = net
                     
                     # 5 x Inception-Resnet-C
-                    net = slim.repeat(net, 5, block8, scale=0.20)
+                    net = slim.repeat(net, 5, self.block8, scale=0.20)
                     end_points['Mixed_8a'] = net
                     
-                    net = block8(net, activation_fn=None)
+                    net = self.block8(net, activation_fn=None)
                     end_points['Mixed_8b'] = net
                     
                     with tf.variable_scope('Logits'):

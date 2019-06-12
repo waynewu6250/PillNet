@@ -60,7 +60,7 @@ class PillNet:
 
         # Update the centers first
         # Calculate the difference between features and its label centers_batches
-        diff = alpha*(centers_batch-logits)
+        diff = (1-alpha)*(centers_batch-logits)
         centers = tf.scatter_sub(centers, labels, diff)
         
         # Then calculate center loss
@@ -82,12 +82,12 @@ class PillNet:
 
         # Center Loss
         center_loss, _ = self.center_loss_op(
-            logits, self.image_batch, self.opt.alpha)
+            logits, self.label_batch, self.opt.alpha)
         tf.identity(center_loss, name='center_loss')
         tf.summary.scalar('center_loss', center_loss)
 
         # Softmax Cross Entropy Loss
-        cross_entropy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(outputs, self.label_batch)
+        cross_entropy_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=outputs, labels=self.label_batch)
         cross_entropy_mean = tf.reduce_mean(cross_entropy_loss, name='cross_entropy_loss')
         tf.identity(cross_entropy_mean, name='cross_entropy_mean')
         tf.summary.scalar('cross_entropy_mean', cross_entropy_mean)
@@ -104,7 +104,7 @@ class PillNet:
         tf.identity(accuracy, name='accuracy')
         tf.summary.scalar('accuracy', accuracy)
 
-        return total_loss, accuracy
+        return logits, center_loss, cross_entropy_mean, total_loss, accuracy 
 
     def optimize(self, total_loss, update_grads, global_step):
         

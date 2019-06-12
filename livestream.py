@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", help="which mode to perform: livestream or image", dest="mode", default="livestream")
-    parser.add_argument("-img", "--image", help="The image path you would like to test", dest="img_path", default="./align/raw_data/tests/YuLuAn_Cold_FC_Tablets.jpg")
+    parser.add_argument("-i", "--image", help="The image path you would like to test", dest="img_path", default="./align/raw_data/tests/YuLuAn_Cold_FC_Tablets.jpg")
     args = parser.parse_args()
 
     # Import the graph

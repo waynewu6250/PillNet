@@ -15,7 +15,9 @@ class ImageData:
         # Load image_path
         self.train_data, self.train_labels,  self.val_data,  self.val_labels = self.load_data()
         self.num_data = len(self.train_data)
-        self.epoch_size = self.num_data // opt.batch_size
+        self.num_batches = self.num_data // opt.batch_size
+        self.num_val_data = len(self.val_data)
+        self.num_val_batches = self.num_val_data // opt.batch_size
 
         # placeholders
         self.batch_size_placeholder=tf.placeholder(tf.int32,name='batch_size')
@@ -31,8 +33,10 @@ class ImageData:
     def load_data(self):
 
         # Load data
-        data = np.array(os.listdir(self.opt.data_path))
-        labels = [re.match(r"^(.*)-(.*)", path.split('.')[0])[1] for path in data]
+        filenames = os.listdir(self.opt.data_path)
+        data = np.array(["./data/train_imgs/"+filename for filename in filenames])
+        labels = np.array([re.match(r"^(.*)-(.*)", filename.split('.')[0])[1] for filename in filenames])
+        self.num_classes = len(set(labels))
 
         # Shuffle the data
         shuffle_indices = np.random.permutation(np.arange(len(labels)))
@@ -52,7 +56,7 @@ class ImageData:
         # Create index producer
         index_queue=tf.train.range_input_producer(self.num_data,num_epochs=None,
                                                  shuffle=True,seed=None,capacity=32)
-        self.index_dequeue_op=index_queue.dequeue_many(self.opt.batch_size*self.epoch_size,'index_dequeue')
+        self.index_dequeue_op=index_queue.dequeue_many(self.opt.batch_size*self.num_batches,'index_dequeue')
 
         # Create data queue
         input_queue=tf.FIFOQueue(capacity=2000000,
@@ -65,16 +69,16 @@ class ImageData:
         # Create batches
         image_and_labels_list=[]
         for _ in range(self.opt.threads):
-            filenames,labels = input_queue.dequeue()
+            filenames, labels = input_queue.dequeue()
             images=[]
             for filename in tf.unstack(filenames):
-                image_contents = tf.read_file(os.path.join("./data/train_imgs/",filename))
+                image_contents = tf.read_file(filename)
                 image = tf.image.decode_image(image_contents, 3)
                 images.append(self.image_var(image))
-            image_and_labels_list.append(images)
+            image_and_labels_list.append([images,labels])
         image_batch,label_batch=tf.train.batch_join(image_and_labels_list,
                                   batch_size=self.batch_size_placeholder,
-                                  shapes=[self.opt.image_size+(3,),()],
+                                  shapes=[self.opt.img_size+(3,),()],
                                   enqueue_many=True,
                                   capacity=4*self.opt.threads*100,
                                   allow_smaller_final_batch=True)
@@ -90,16 +94,17 @@ class ImageData:
         image=tf.cond(tf.constant(np.random.uniform()>0.8),
                     lambda:tf.py_func(random_rotate_image,[image],tf.uint8),
                     lambda:tf.identity(image))
-        # Rnadom crop
+        # Random crop
         image=tf.cond(tf.constant(np.random.uniform()>0.5),
-                        lambda:tf.random_crop(image,self.opt.image_size+(3,)),
-                        lambda:tf.image.resize_image_with_crop_or_pad(image,self.opt.image_size,self.opt.image_size))
+                        lambda:tf.random_crop(image,self.opt.img_size+(3,)),
+                        lambda:tf.image.resize_image_with_crop_or_pad(image,self.opt.img_size[0],self.opt.img_size[1]))
         # Random contrast
         image=tf.cond(tf.constant(np.random.uniform()>0.7),
-                        lambda:tf.image.random_contrast(image),
+                        lambda:tf.image.random_contrast(image,lower=0.3, upper=1.0),
                         lambda:tf.identity(image))
-        
-        image.set_shape(self.opt.image_size+(3,))
+        # Normalize into [-1,1]
+        image=tf.cast(image,tf.float32)-127.5/128.0
+        image.set_shape(self.opt.img_size+(3,))
         
         return image
 
@@ -133,5 +138,3 @@ class ImageData:
     def save_pickle(data, file):
         with open(file,'wb') as f:
             pickle.dump(data, f)
-
-
