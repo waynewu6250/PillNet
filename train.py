@@ -63,11 +63,11 @@ def train():
                 # Get all images and labels
                 index_epoch = sess.run(alldata.index_dequeue_op)
                 train_data_epoch = np.array(alldata.train_data)[
-                    index_epoch][:, np.newaxis]
+                    index_epoch]
                 train_labels_epoch = np.array(alldata.train_labels)[
-                    index_epoch][:, np.newaxis]
+                    index_epoch]
 
-                sess.run(alldata.enqueue_op, feed_dict={
+                sess.run(alldata.iterator.initializer, feed_dict={
                          alldata.image_paths_placeholder: train_data_epoch,
                          alldata.labels_placeholder: train_labels_epoch})
 
@@ -83,8 +83,8 @@ def train():
 
                     _, logits_, center_loss_, cross_entropy_mean_, total_loss_, accuracy_, global_step_ = sess.run(
                         tensor_list, feed_dict=feed_dict)
-                    print("here")
-                    if num_batch % 1 == 0:
+                    
+                    if num_batch % 5 == 0:
 
                         # Visualization
                         summary_str = sess.run(
@@ -106,17 +106,18 @@ def train():
 
                 # Validation
                 val_data_epoch = np.array(alldata.val_data)[
-                    :opt.batch_size*alldata.num_val_batches][:, np.newaxis]
+                    :opt.batch_size*alldata.num_val_batches]
                 val_labels_epoch = np.array(alldata.val_labels)[
-                    :opt.batch_size*alldata.num_val_batches][:, np.newaxis]
+                    :opt.batch_size*alldata.num_val_batches]
 
-                sess.run(alldata.enqueue_op, feed_dict={
+                sess.run(alldata.iterator.initializer, feed_dict={
                          alldata.image_paths_placeholder: val_data_epoch,
                          alldata.labels_placeholder: val_labels_epoch})
                 
                 loss_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean, accuracy_val_mean = 0,0,0,0
 
-                for num_batch in range(alldata.num_val_batches):
+                num_batch = 0
+                while num_batch < alldata.num_val_batches:
                     
                     tensor_list = [total_loss, center_loss,
                                    cross_entropy_mean, accuracy, summary_op]
@@ -137,6 +138,7 @@ def train():
                                                 center loss: %4f,
                                                 cross entropy loss: %4f,
                                                 Total loss: %4f""" % (accuracy_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean,loss_val_mean))
+                    num_batch += 1
 
 
 if __name__ == "__main__":

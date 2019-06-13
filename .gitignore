@@ -119,6 +119,9 @@ align/my_exported_graphs/
 align/my_exported_graphs_old/
 graph/
 
+#checkpoint
+checkpoints/
+
 # ipynb
 *.ipynb
 

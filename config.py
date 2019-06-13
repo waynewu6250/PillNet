@@ -22,7 +22,7 @@ class Config:
     keep_prob = 0.8
 
     # Data
-    img_size = (160, 160)
+    img_size = (500, 500)
     data_split_ratio = 0.8
     threads = 4
 
