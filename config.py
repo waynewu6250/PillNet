@@ -10,11 +10,11 @@ class Config:
 
     ######## For PILLNET training ########
     data_path = "./data/train_imgs"
-    model_dir = "./checkpoints"
+    model_dir = "./checkpoints/"
 
     # Hyperparameter
     max_epoch = 100
-    batch_size = 2
+    batch_size = 16
     embedding_size = 512
     lr = 0.01
     moving_average_decay = 0.999

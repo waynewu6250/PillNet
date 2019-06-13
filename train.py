@@ -31,7 +31,7 @@ def train():
 
         saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=3)
         summary_op = tf.summary.merge_all()
-        init = tf.global_variables_initializer()
+        init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
 
         ###########################################################################
         ############               Start to run the graph              ############
@@ -51,14 +51,14 @@ def train():
             if os.path.exists(opt.model_dir):
                 model_file = tf.train.latest_checkpoint(opt.model_dir)
                 if model_file:
-                    sess.restore(sess, model_file)
+                    saver.restore(sess, model_file)
                     print("Load from latest checkpoint")
             else:
                 os.mkdir(opt.model_dir)
 
             for epoch in range(opt.max_epoch):
 
-                global_step = sess.run(global_step)
+                _ = sess.run(global_step)
 
                 # Get all images and labels
                 index_epoch = sess.run(alldata.index_dequeue_op)
@@ -72,7 +72,8 @@ def train():
                          alldata.labels_placeholder: train_labels_epoch})
 
                 # Training
-                for num_batch in range(alldata.num_batches):
+                num_batch = 0
+                while num_batch < alldata.num_batches:
 
                     tensor_list = [train_op, logits, center_loss,
                                    cross_entropy_mean, total_loss, accuracy, global_step]
@@ -82,14 +83,16 @@ def train():
 
                     _, logits_, center_loss_, cross_entropy_mean_, total_loss_, accuracy_, global_step_ = sess.run(
                         tensor_list, feed_dict=feed_dict)
-
-                    if num_batch % 100 == 0:
+                    print("here")
+                    if num_batch % 1 == 0:
 
                         # Visualization
                         summary_str = sess.run(
-                            [summary_op], feed_dict=feed_dict)
+                            summary_op, feed_dict=feed_dict)
+                        
                         train_writer.add_summary(
                             summary_str, global_step=global_step_)
+                        
                         print('epoch:%d/%d' % (epoch, opt.max_epoch))
                         print("Step: %d/%d, accuracy: %3f, center loss: %4f, cross loss: %4f, Total Loss: %4f" % (
                             global_step_, alldata.num_batches*opt.max_epoch, accuracy_, center_loss_, cross_entropy_mean_, total_loss_))
@@ -97,6 +100,7 @@ def train():
                         # Saver
                         saver.save(sess, opt.model_dir+'model.ckpt',
                                    global_step=global_step_)
+                    num_batch += 1
 
                 train_writer.add_summary(summary_str, global_step=global_step_)
 

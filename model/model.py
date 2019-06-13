@@ -74,7 +74,7 @@ class PillNet:
 
         # Logits Inference
         logits, _ = self.inference_model.inference(self.image_batch,
-                                                    keep_prob, phase_train, embedding_size, weight_decay)
+                                                   keep_prob, phase_train, embedding_size, weight_decay)
         # Linear layer
         with tf.variable_scope("fc"):
             outputs = self.linear(logits, [logits.get_shape()[1], self.num_classes],
@@ -117,8 +117,8 @@ class PillNet:
             tf.summary.histogram(var.op.name, var)
 
         for grad, var in grads:
-                if grad is not None:
-                    tf.summary.histogram(var.op.name + '/gradients', grad)
+            if grad is not None:
+                tf.summary.histogram(var.op.name + '/gradients', grad)
         
         variable_averages=tf.train.ExponentialMovingAverage(self.opt.moving_average_decay,global_step)
         variables_averages_op = variable_averages.apply(tf.trainable_variables())
