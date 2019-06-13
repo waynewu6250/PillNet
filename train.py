@@ -134,10 +134,7 @@ def train():
 
                     val_writer.add_summary(summary_val, global_step=epoch)
 
-                    print("""Validation Result: accuracy: %3f,
-                                                center loss: %4f,
-                                                cross entropy loss: %4f,
-                                                Total loss: %4f""" % (accuracy_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean,loss_val_mean))
+                    print("Validation Result: accuracy: %3f, center loss: %4f, cross entropy loss: %4f, Total loss: %4f" % (accuracy_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean,loss_val_mean))
                     num_batch += 1
 
 
