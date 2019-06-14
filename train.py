@@ -45,7 +45,7 @@ def train():
 
             # Run data batch
             coord = tf.train.Coordinator()
-            tf.train.start_queue_runners(coord=coord, sess=sess)
+            threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
             # Load model
             if os.path.exists(opt.model_dir):
@@ -116,8 +116,7 @@ def train():
                 
                 loss_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean, accuracy_val_mean = 0,0,0,0
 
-                num_batch = 0
-                while num_batch < alldata.num_val_batches:
+                for num_batch in range(alldata.num_val_batches):
                     
                     tensor_list = [total_loss, center_loss,
                                    cross_entropy_mean, accuracy, summary_op]
@@ -132,10 +131,15 @@ def train():
                     cross_entropy_mean_val_mean += cross_entropy_mean_val
                     accuracy_val_mean += accuracy_val
 
-                    val_writer.add_summary(summary_val, global_step=epoch)
-
-                    print("Validation Result: accuracy: %3f, center loss: %4f, cross entropy loss: %4f, Total loss: %4f" % (accuracy_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean,loss_val_mean))
-                    num_batch += 1
+                val_writer.add_summary(summary_val, global_step=epoch)
+                loss_val_mean/=alldata.num_val_batches
+                center_loss_val_mean/=alldata.num_val_batches
+                cross_entropy_mean_val_mean/=alldata.num_val_batches
+                accuracy_val_mean/=alldata.num_val_batches
+                print("Validation Result: accuracy: %3f, center loss: %4f, cross entropy loss: %4f, Total loss: %4f" % (accuracy_val_mean, center_loss_val_mean, cross_entropy_mean_val_mean,loss_val_mean))
+            
+            coord.request_stop()
+            coord.join(threads)
 
 
 if __name__ == "__main__":

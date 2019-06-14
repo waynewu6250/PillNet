@@ -87,6 +87,8 @@ class ImageData:
     @staticmethod
     def _parse_function(filename, label):
 
+        img_size = (149, 149)
+
         def random_rotate_image(image):
             angle = np.random.uniform(low=-10.0, high=10.0)
             return misc.imrotate(image, angle, 'bicubic')
@@ -101,15 +103,15 @@ class ImageData:
                     lambda:tf.identity(image))
         # Random crop
         image=tf.cond(tf.constant(np.random.uniform()>0.5),
-                        lambda:tf.random_crop(image,(160,160,3,)),
-                        lambda:tf.image.resize_image_with_crop_or_pad(image,160,160))
+                        lambda:tf.random_crop(image,img_size+(3,)),
+                        lambda:tf.image.resize_image_with_crop_or_pad(image,img_size[0],img_size[0]))
         # Random contrast
         image=tf.cond(tf.constant(np.random.uniform()>0.7),
                         lambda:tf.image.random_contrast(image,lower=0.3, upper=1.0),
                         lambda:tf.identity(image))
         # Normalize into [-1,1]
         image=tf.cast(image,tf.float32)-127.5/128.0
-        image.set_shape((160,160,3,))
+        image.set_shape(img_size+(3,))
         
         return image, label
 

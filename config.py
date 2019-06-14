@@ -16,13 +16,12 @@ class Config:
     max_epoch = 100
     batch_size = 16
     embedding_size = 512
-    lr = 0.01
+    lr = 0.001
     moving_average_decay = 0.999
     weight_decay = 5e-4
     keep_prob = 0.8
 
     # Data
-    img_size = (160, 160)
     data_split_ratio = 0.8
     threads = 4
 
