@@ -75,6 +75,7 @@ class PillNet:
         # Logits Inference
         logits, _ = self.inference_model.inference(self.image_batch,
                                                    keep_prob, phase_train, embedding_size, weight_decay)
+        features = tf.nn.l2_normalize(logits,1,1e-10,name='features')
         # Linear layer
         with tf.variable_scope("fc"):
             outputs = self.linear(logits, [logits.get_shape()[1], self.num_classes],

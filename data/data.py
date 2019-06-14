@@ -79,7 +79,7 @@ class ImageData:
         iterator = dataset.make_initializable_iterator()
         image_batch, label_batch = iterator.get_next()
 
-        return iterator, tf.identity(image_batch), tf.identity(label_batch)
+        return iterator, tf.identity(image_batch, 'image_input'), tf.identity(label_batch, 'label_input')
     
     @staticmethod
     def _parse_function(filename, label):
