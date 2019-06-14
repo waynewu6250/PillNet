@@ -10,7 +10,9 @@ class Config:
 
     ######## For PILLNET training ########
     data_path = "./data/train_imgs"
+    feature_save_path = "./data/embeddings.h5"
     model_dir = "./checkpoints/"
+    restore_index = 1699
 
     # Hyperparameter
     max_epoch = 100

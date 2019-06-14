@@ -7,7 +7,11 @@ from data import ImageData
 from model import PillNet
 
 
-def train():
+def train(**kwargs):
+
+    # Set attributes
+    for k, v in kwargs.items():
+        setattr(opt, k, v)
 
     with tf.Graph().as_default():
 
@@ -15,10 +19,12 @@ def train():
 
         # Load Data
         alldata = ImageData(opt)
+        # create batches
+        iterator, image_batch, label_batch = alldata.start_queue()
 
         # Model
-        net = PillNet(alldata.image_batch,
-                      alldata.label_batch,
+        net = PillNet(image_batch,
+                      label_batch,
                       alldata.num_classes,
                       opt)
 
@@ -67,7 +73,7 @@ def train():
                 train_labels_epoch = np.array(alldata.train_labels)[
                     index_epoch]
 
-                sess.run(alldata.iterator.initializer, feed_dict={
+                sess.run(iterator.initializer, feed_dict={
                          alldata.image_paths_placeholder: train_data_epoch,
                          alldata.labels_placeholder: train_labels_epoch})
 
@@ -104,13 +110,16 @@ def train():
 
                 train_writer.add_summary(summary_str, global_step=global_step_)
 
-                # Validation
+                ###########################################################################
+                ############              Start to run validation              ############
+                ###########################################################################
+                
                 val_data_epoch = np.array(alldata.val_data)[
                     :opt.batch_size*alldata.num_val_batches]
                 val_labels_epoch = np.array(alldata.val_labels)[
                     :opt.batch_size*alldata.num_val_batches]
 
-                sess.run(alldata.iterator.initializer, feed_dict={
+                sess.run(iterator.initializer, feed_dict={
                          alldata.image_paths_placeholder: val_data_epoch,
                          alldata.labels_placeholder: val_labels_epoch})
                 
@@ -141,9 +150,42 @@ def train():
             coord.request_stop()
             coord.join(threads)
 
+def features(**kwargs):
+    # This function helps to extract all the image features from the train_imgs
+    # and create the database for image testing
+
+    # Set attributes
+    for k, v in kwargs.items():
+        setattr(opt, k, v)
+
+    if os.path.exists(opt.feature_save_path):
+        print("You have extracted the image features already!!")
+        return
+    
+    with tf.Graph().as_default():
+        with tf.Session as sess:
+
+            # Load Data
+            alldata = ImageData(opt)
+
+            # Load model
+            filename = opt.model_dir+"model.ckpt-{}.meta".format(opt.restore_index)
+            if os.path.exists(filename):
+                saver = tf.train.import_meta_graph(filename)
+                saver.restore(sess, tf.train.latest_checkpoint(opt.model_dir))
+            
+            
+
+
+
+    
+
+
+
 
 if __name__ == "__main__":
-    train()
+    import fire
+    fire.Fire()
 
 
                     

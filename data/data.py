@@ -25,9 +25,6 @@ class ImageData:
         self.image_paths_placeholder=tf.placeholder(tf.string,shape=(None,),name='image_paths')
         self.labels_placeholder=tf.placeholder(tf.int32,shape=(None,),name='label')
         self.keep_probability_placeholder=tf.placeholder(tf.float32,name='keep_probability')
-
-        # create batches
-        self.iterator, self.image_batch, self.label_batch = self.start_queue()
     
     
     def class_to_id(self, labels):
@@ -102,9 +99,7 @@ class ImageData:
                     lambda:tf.py_func(random_rotate_image,[image],tf.uint8),
                     lambda:tf.identity(image))
         # Random crop
-        image=tf.cond(tf.constant(np.random.uniform()>0.5),
-                        lambda:tf.random_crop(image,img_size+(3,)),
-                        lambda:tf.image.resize_image_with_crop_or_pad(image,img_size[0],img_size[0]))
+        image=tf.image.resize_image_with_crop_or_pad(image,img_size[0],img_size[0])
         # Random contrast
         image=tf.cond(tf.constant(np.random.uniform()>0.7),
                         lambda:tf.image.random_contrast(image,lower=0.3, upper=1.0),
