@@ -13,7 +13,7 @@ class ImageData:
         self.opt = opt
         
         # Load image_path
-        self.train_data, self.train_labels,  self.val_data,  self.val_labels = self.load_data()
+        self.train_data, self.train_labels,  self.val_data,  self.val_labels, self.data, self.labels = self.load_data()
         self.num_data = len(self.train_data)
         self.num_batches = self.num_data // opt.batch_size
         self.num_val_data = len(self.val_data)
@@ -61,7 +61,7 @@ class ImageData:
         val_data = data[int(self.opt.data_split_ratio*len(data)):]
         val_labels = labels[int(self.opt.data_split_ratio*len(data)):]
 
-        return train_data, train_labels, val_data, val_labels
+        return train_data, train_labels, val_data, val_labels, data, labels
     
     
     def start_queue(self):

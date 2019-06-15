@@ -1,6 +1,8 @@
 import tensorflow as tf
 import os
 import numpy as np
+import cv2
+import pickle
 
 from config import opt
 from data import ImageData
@@ -163,24 +165,36 @@ def features(**kwargs):
         return
     
     with tf.Graph().as_default():
-        with tf.Session as sess:
+        with tf.Session() as sess:
 
             # Load Data
             alldata = ImageData(opt)
+            image_arr = []
+            for img_path in alldata.data:
+                img = cv2.imread(img_path)
+                scaled =cv2.resize(img,(149, 149),interpolation=cv2.INTER_LINEAR)-127.5/128.0
+                image_arr.append(scaled)
+            image_arr = np.asarray(image_arr)
 
             # Load model
             filename = opt.model_dir+"model.ckpt-{}.meta".format(opt.restore_index)
             if os.path.exists(filename):
                 saver = tf.train.import_meta_graph(filename)
-                saver.restore(sess, tf.train.latest_checkpoint(opt.model_dir))            
+                saver.restore(sess, tf.train.latest_checkpoint(opt.model_dir))    
+            
+            features = tf.get_default_graph().get_tensor_by_name("features")
+            images_placeholder = tf.get_default_graph().get_tensor_by_name("image_input")
+            phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train")
+            keep_probability_placeholder = tf.get_default_graph().get_tensor_by_name("keep_probability")
 
+            # feed_dict = {images_placeholder: image_arr,
+            #              phase_train_placeholder: False,
+            #              keep_probability_placeholder: 1.0}
+            
+            # feats = sess.run(features, feed_dict=feed_dict)
 
-
-
-
-
-
-
+            # with open(opt.feature_save_path,'wb') as f:
+            #     pickle.dump(feats, f)
 
 
 if __name__ == "__main__":
