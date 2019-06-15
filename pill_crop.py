@@ -14,7 +14,7 @@ for i in range(len(data)):
     ymax = data.loc[i]["ymax"]
     counter = data.loc[i]["data_num"]
     
-    path = os.path.join("./align/raw_data/tests",filename)
+    path = os.path.join("./align/raw_data/images",filename)
     if os.path.exists(path):
         im = Image.open(path)
         region = im.crop((xmin, ymin, xmax, ymax))

@@ -100,7 +100,7 @@ class PillNet:
         tf.summary.scalar('total_loss', total_loss)
         
         # Accuracy
-        correct_prediction = tf.equal(tf.argmax(logits, 1), tf.cast(self.label_batch, tf.int64))
+        correct_prediction = tf.equal(tf.argmax(outputs, 1), tf.cast(self.label_batch, tf.int64))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.identity(accuracy, name='accuracy')
         tf.summary.scalar('accuracy', accuracy)

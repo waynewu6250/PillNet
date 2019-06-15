@@ -12,10 +12,10 @@ class Config:
     data_path = "./data/train_imgs"
     feature_save_path = "./data/embeddings.h5"
     model_dir = "./checkpoints/"
-    restore_index = 1699
+    restore_index = 4851
 
     # Hyperparameter
-    max_epoch = 100
+    max_epoch = 500
     batch_size = 16
     embedding_size = 512
     lr = 0.001

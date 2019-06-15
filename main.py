@@ -163,7 +163,7 @@ def features(**kwargs):
         return
     
     with tf.Graph().as_default():
-        with tf.Session as sess:
+        with tf.Session() as sess:
 
             # Load Data
             alldata = ImageData(opt)
@@ -174,6 +174,10 @@ def features(**kwargs):
                 saver = tf.train.import_meta_graph(filename)
                 saver.restore(sess, tf.train.latest_checkpoint(opt.model_dir))
             
+            features = tf.get_default_graph().get_tensor_by_name("features:0")
+            images_placeholder = tf.get_default_graph().get_tensor_by_name("image_input:0")
+            phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
+            keep_probability_placeholder = tf.get_default_graph().get_tensor_by_name("keep_probability:0")
             
 
 
