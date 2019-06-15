@@ -10,7 +10,7 @@ class Config:
 
     ######## For PILLNET training ########
     data_path = "./data/train_imgs"
-    feature_save_path = "./data/embeddings.h5"
+    feature_save_path = "./data/features.pkl"
     model_dir = "./checkpoints/"
     restore_index = 4851
 
