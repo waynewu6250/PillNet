@@ -187,14 +187,14 @@ def features(**kwargs):
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train")
             keep_probability_placeholder = tf.get_default_graph().get_tensor_by_name("keep_probability")
 
-            # feed_dict = {images_placeholder: image_arr,
-            #              phase_train_placeholder: False,
-            #              keep_probability_placeholder: 1.0}
+            feed_dict = {images_placeholder: image_arr,
+                         phase_train_placeholder: False,
+                         keep_probability_placeholder: 1.0}
             
-            # feats = sess.run(features, feed_dict=feed_dict)
+            feats = sess.run(features, feed_dict=feed_dict)
 
-            # with open(opt.feature_save_path,'wb') as f:
-            #     pickle.dump(feats, f)
+            with open(opt.feature_save_path,'wb') as f:
+                pickle.dump(feats, f)
 
 
 if __name__ == "__main__":
