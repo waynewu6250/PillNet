@@ -105,7 +105,7 @@ class PillNet:
         tf.identity(accuracy, name='accuracy')
         tf.summary.scalar('accuracy', accuracy)
 
-        return logits, center_loss, cross_entropy_mean, total_loss, accuracy 
+        return logits, center_loss, cross_entropy_mean, total_loss, accuracy, features 
 
     def optimize(self, total_loss, update_grads, global_step):
         

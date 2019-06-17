@@ -30,7 +30,7 @@ def train(**kwargs):
                       alldata.num_classes,
                       opt)
 
-        logits, center_loss, cross_entropy_mean, total_loss, accuracy = net.inference(alldata.keep_probability_placeholder,
+        logits, center_loss, cross_entropy_mean, total_loss, accuracy, _ = net.inference(alldata.keep_probability_placeholder,
                                                                                       alldata.phase_train_placeholder,
                                                                                       opt.embedding_size,
                                                                                       opt.weight_decay)
@@ -164,6 +164,8 @@ def features(**kwargs):
         print("You have extracted the image features already!!")
         return
     
+    tf.reset_default_graph()
+
     with tf.Graph().as_default():
         with tf.Session() as sess:
 
@@ -184,11 +186,12 @@ def features(**kwargs):
             
             features = tf.get_default_graph().get_tensor_by_name("features:0")
             images_placeholder = tf.get_default_graph().get_tensor_by_name("image_input:0")
-            phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
-            keep_probability_placeholder = tf.get_default_graph().get_tensor_by_name("keep_probability:0")
+            phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train_1:0")
+            keep_probability_placeholder = tf.get_default_graph().get_tensor_by_name("keep_probability_1:0")
             
-            feed_dict = {images_placeholder: image_arr, phase_train_placeholder: False, keep_probability_placeholder: 1.0}
-
+            feed_dict = {images_placeholder: image_arr, 
+            phase_train_placeholder: False,
+            keep_probability_placeholder: 1.0}
 
             feats = sess.run(features, feed_dict=feed_dict)
 
