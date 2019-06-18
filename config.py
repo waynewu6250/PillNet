@@ -11,6 +11,7 @@ class Config:
     ######## For PILLNET training ########
     data_path = "./data/train_imgs"
     feature_save_path = "./data/features.pkl"
+    label_save_path = "./data/labels.pkl"
     model_dir = "./checkpoints/"
     restore_index = 4851
 
@@ -31,6 +32,12 @@ class Config:
     alpha = 0.6
     center_loss_factor = 1e-2
     ######## For PILLNET training ########
+
+    ######## For PILLNET recognition ########
+    max_boxes_to_draw = 20
+    min_score_thresh = .5
+    embed_threshold = 0.002
+    ######## For PILLNET recognition ########
 
 
 opt = Config()

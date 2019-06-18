@@ -152,7 +152,7 @@ def train(**kwargs):
             coord.request_stop()
             coord.join(threads)
 
-def features(**kwargs):
+def extract(**kwargs):
     # This function helps to extract all the image features from the train_imgs
     # and create the database for image testing
 
@@ -195,8 +195,14 @@ def features(**kwargs):
 
             feats = sess.run(features, feed_dict=feed_dict)
 
+            label_ref = {"labels": alldata.labels,
+                         "class2id": alldata.class2id,
+                         "id2class": alldata.id2class}
+
             with open(opt.feature_save_path,'wb') as f:
                 pickle.dump(feats, f)
+            with open(opt.label_save_path, 'wb') as f:
+                pickle.dump(label_ref, f)
 
 
 if __name__ == "__main__":
