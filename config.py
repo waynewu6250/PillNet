@@ -10,6 +10,7 @@ class Config:
 
     ######## For PILLNET training ########
     data_path = "./data/train_imgs"
+    img_paths = "./data/imgs.pkl"
     feature_save_path = "./data/features.pkl"
     label_save_path = "./data/labels.pkl"
     model_dir = "./checkpoints/"
@@ -36,7 +37,7 @@ class Config:
     ######## For PILLNET recognition ########
     max_boxes_to_draw = 20
     min_score_thresh = .5
-    embed_threshold = 0.002
+    embed_threshold = 1e-5
     ######## For PILLNET recognition ########
 
 

@@ -8,12 +8,12 @@ from scipy import misc
 
 class ImageData:
 
-    def __init__(self, opt):
+    def __init__(self, opt, load=True):
 
         self.opt = opt
         
         # Load image_path
-        self.train_data, self.train_labels,  self.val_data,  self.val_labels, self.data, self.labels = self.load_data()
+        self.train_data, self.train_labels,  self.val_data,  self.val_labels, self.data, self.labels = self.load_data(load)
         self.num_data = len(self.train_data)
         self.num_batches = self.num_data // opt.batch_size
         self.num_val_data = len(self.val_data)
@@ -41,10 +41,14 @@ class ImageData:
         return labels, class2id, id2class
         
     
-    def load_data(self):
+    def load_data(self, load):
 
         # Load data
-        filenames = os.listdir(self.opt.data_path)
+        if load:
+            filenames = self.load_pickle(self.opt.img_paths)
+        else:
+            filenames = os.listdir(self.opt.data_path)
+            self.save_pickle(filenames, self.opt.img_paths)
         data = np.array(["./data/train_imgs/"+filename for filename in filenames])
         labels = np.array([re.match(r"^(.*)-(.*)", filename.split('.')[0])[1] for filename in filenames])
         labels, self.class2id, self.id2class = self.class_to_id(labels)
@@ -52,14 +56,14 @@ class ImageData:
 
         # Shuffle the data
         shuffle_indices = np.random.permutation(np.arange(len(labels)))
-        data = data[shuffle_indices]
-        labels = labels[shuffle_indices]
+        data_for_train = data[shuffle_indices]
+        labels_for_train = labels[shuffle_indices]
 
         # Split into train and validation sets
-        train_data = data[:int(self.opt.data_split_ratio*len(data))]
-        train_labels = labels[:int(self.opt.data_split_ratio*len(data))]
-        val_data = data[int(self.opt.data_split_ratio*len(data)):]
-        val_labels = labels[int(self.opt.data_split_ratio*len(data)):]
+        train_data = data_for_train[:int(self.opt.data_split_ratio*len(data))]
+        train_labels = labels_for_train[:int(self.opt.data_split_ratio*len(data))]
+        val_data = data_for_train[int(self.opt.data_split_ratio*len(data)):]
+        val_labels = labels_for_train[int(self.opt.data_split_ratio*len(data)):]
 
         return train_data, train_labels, val_data, val_labels, data, labels
     

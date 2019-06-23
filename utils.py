@@ -51,10 +51,14 @@ def recognize_pill(image_np, boxes, classes, scores, labels):
     with tf.Graph().as_default():
         with tf.Session() as sess:
 
+            # Load model
             filename = opt.model_dir+"model.ckpt-{}.meta".format(opt.restore_index)
             if os.path.exists(filename):
                 saver = tf.train.import_meta_graph(filename)
-                saver.restore(sess, tf.train.latest_checkpoint(opt.model_dir))    
+                model_file = tf.train.latest_checkpoint(opt.model_dir)
+                if model_file:
+                    saver.restore(sess, model_file)
+                    print("Load from latest checkpoint")   
             
             features = tf.get_default_graph().get_tensor_by_name("features:0")
             images_placeholder = tf.get_default_graph().get_tensor_by_name("image_input:0")
@@ -71,7 +75,6 @@ def recognize_pill(image_np, boxes, classes, scores, labels):
             renew_scores = [0]*boxes.shape[0]
             for i in range(feats.shape[0]):
                 diff=np.mean(np.square(feats[i]-feat_database),axis=1)
-                print(diff)
                 if min(diff)<opt.embed_threshold:
                     index=np.argmin(diff)
                     score = 1/(1+np.exp(-(1-min(diff))))
