@@ -235,12 +235,27 @@ id2class = label_ref["id2class"]
 index = np.random.randint(0,len(labels))
 indexes = [i for i in range(len(labels)) if labels[index] == labels[i]]
 print(indexes)
-score1 = 1000*np.mean(np.square(feats[indexes[0]]-feats[indexes[1]]))
-score2 = 1000*np.mean(np.square(feats[indexes[0]]-feats[24]))
+score1 = np.dot(feats[indexes[0]],feats[indexes[1]])
+score2 = np.dot(feats[indexes[0]],feats[24])
+#score1 = np.mean(np.square(feats[indexes[0]]-feats[indexes[1]]))
+#score2 = np.mean(np.square(feats[indexes[0]]-feats[24]))
 print("same label: %.8f" % score1)
 print("different label: %.8f" % score2)
 print(id2class[labels[indexes[0]]])
 print(id2class[labels[indexes[1]]])
 print(id2class[labels[24]])
+
+#%%
+target = feats[indexes[0]]
+norms = np.linalg.norm(feats, axis=1)
+
+a = np.dot(feats, target[:,np.newaxis]).flatten()
+
+print(sorted(np.argsort(a)[::-1][:len(indexes)]))
+print(sorted(np.sort(a)[::-1][:len(indexes)], reverse=True))
+
+print(sorted(indexes))
+print(a[indexes])
+
 
 #%%

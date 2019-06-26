@@ -37,7 +37,7 @@ class Config:
     ######## For PILLNET recognition ########
     max_boxes_to_draw = 20
     min_score_thresh = .5
-    embed_threshold = 1e-5
+    embed_threshold = 0.02
     ######## For PILLNET recognition ########
 
 

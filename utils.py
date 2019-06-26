@@ -17,8 +17,8 @@ def load_image_into_numpy_array(image):
 # Image recognition helper
 def recognize_pill(image_np, boxes, classes, scores, labels):
 
-    im_width = image_np.shape[0]
-    im_height = image_np.shape[1]
+    im_height = image_np.shape[0]
+    im_width = image_np.shape[1]
 
     image_arr = []
     flag = 0
@@ -31,10 +31,11 @@ def recognize_pill(image_np, boxes, classes, scores, labels):
             
             (left, right, top, bottom) = (round(xmin * im_width), round(xmax * im_width),
                                           round(ymin * im_height), round(ymax * im_height))
-            crop_image = image_np[left:right,top:bottom,:]
-            scaled =cv2.resize(crop_image,(149, 149),interpolation=cv2.INTER_LINEAR)-127.5/128.0
+            crop_image = image_np[top:bottom,left:right,:]
+            scaled =cv2.resize(crop_image,(149, 149),interpolation=cv2.INTER_LINEAR)#-127.5/128.0
             image_arr.append(scaled)
             flag = 1
+    cv2.imshow("crop image",scaled)
     
     if flag == 0:
         print("Nothing detected!!")
@@ -45,6 +46,8 @@ def recognize_pill(image_np, boxes, classes, scores, labels):
     # Load pre-extracted database embeddings
     with open(opt.feature_save_path, "rb") as f:
         feat_database = pickle.load(f)
+    score1 = np.dot(feat_database[54],feat_database[66])
+    print(score1)
 
     # Start to detect
 
@@ -73,14 +76,16 @@ def recognize_pill(image_np, boxes, classes, scores, labels):
             
             renew_classes = ['Others']*feats.shape[0]
             renew_scores = [0]*boxes.shape[0]
+            
             for i in range(feats.shape[0]):
-                diff=np.mean(np.square(feats[i]-feat_database),axis=1)
-                if min(diff)<opt.embed_threshold:
-                    index=np.argmin(diff)
-                    score = 1/(1+np.exp(-(1-min(diff))))
+                scores = np.dot(feat_database, feats[i][:,np.newaxis]).flatten()
+                print(scores)
+                score = max(scores)
+                print(score)
+                if min(scores)<opt.embed_threshold:
+                    index=np.argmax(scores)
                     renew_classes[i] = labels[index]
                     renew_scores[i] = score
     
-    return np.asarray(renew_classes).astype(np.int32), \
-           np.asarray(renew_scores)
+    return np.asarray(renew_classes), np.asarray(renew_scores)
 
